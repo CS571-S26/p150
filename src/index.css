@@ -1,4 +1,167 @@
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode */
+.dark-mode {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+.dark-mode .navbar {
+  background-color: #16213e !important;
+}
+
+.dark-mode .card {
+  background-color: #16213e;
+  border-color: #0f3460;
+  color: #e0e0e0;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: #0f3460;
+  border-color: #1a1a4e;
+  color: #e0e0e0;
+}
+
+.dark-mode .form-control::placeholder {
+  color: #8888aa;
+}
+
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+  background-color: #0f3460;
+  color: #e0e0e0;
+  border-color: #4a90d9;
+  box-shadow: 0 0 0 0.2rem rgba(74, 144, 217, 0.25);
+}
+
+.dark-mode .table {
+  color: #e0e0e0;
+}
+
+.dark-mode .table-hover tbody tr:hover {
+  color: #e0e0e0;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .text-muted {
+  color: #8888aa !important;
+}
+
+.dark-mode .list-group-item {
+  background-color: #16213e;
+  border-color: #0f3460;
+  color: #e0e0e0;
+}
+
+.dark-mode .progress {
+  background-color: #0f3460;
+}
+
+/* Verse card styles */
+.verse-card {
+  border-left: 4px solid #0d6efd;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.verse-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .verse-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.verse-reference {
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+.verse-text {
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.verse-text-large {
+  font-size: 1.3rem;
+  font-style: italic;
+  line-height: 1.8;
+}
+
+/* Tag badges */
+.tag-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.3em 0.6em;
+}
+
+.tag-badge.clickable:hover {
+  opacity: 0.8;
+}
+
+/* Streak card */
+.streak-card {
+  border: 2px solid #ffc107;
+}
+
+.streak-flame {
+  font-size: 2.5rem;
+}
+
+.streak-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #ffc107;
+}
+
+/* Stat cards */
+.stat-card {
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+/* Review card */
+.review-card {
+  border: 2px solid #0d6efd;
+  min-height: 300px;
+}
+
+/* Add verse form */
+.add-verse-form {
+  border: 1px dashed #6c757d;
+  background-color: #f8f9fa;
+}
+
+.dark-mode .add-verse-form {
+  background-color: #1a1a3e;
+  border-color: #4a4a6e;
+}
+
+/* Smooth transitions for dark mode toggle */
+.app {
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.app.dark-mode {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+/* Dark mode switch styling */
+#dark-mode-switch {
+  cursor: pointer;
 }
