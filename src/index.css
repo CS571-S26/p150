@@ -4,14 +4,10 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* Dark mode */
+/* ── Dark mode ──────────────────────────────────────────── */
 .dark-mode {
   background-color: #1a1a2e;
   color: #e0e0e0;
-}
-
-.dark-mode .navbar {
-  background-color: #16213e !important;
 }
 
 .dark-mode .card {
@@ -27,9 +23,7 @@ body {
   color: #e0e0e0;
 }
 
-.dark-mode .form-control::placeholder {
-  color: #8888aa;
-}
+.dark-mode .form-control::placeholder { color: #8888aa; }
 
 .dark-mode .form-control:focus,
 .dark-mode .form-select:focus {
@@ -39,107 +33,62 @@ body {
   box-shadow: 0 0 0 0.2rem rgba(74, 144, 217, 0.25);
 }
 
-.dark-mode .table {
-  color: #e0e0e0;
-}
+.dark-mode .table { color: #e0e0e0; }
 
 .dark-mode .table-hover tbody tr:hover {
   color: #e0e0e0;
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.dark-mode .text-muted {
-  color: #8888aa !important;
+.dark-mode .text-muted { color: #8888aa !important; }
+
+.dark-mode .progress { background-color: #0f3460; }
+
+.dark-mode .quiz-result { background-color: #0f3460; }
+
+/* ── App shell ──────────────────────────────────────────── */
+.app {
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.dark-mode .list-group-item {
-  background-color: #16213e;
-  border-color: #0f3460;
-  color: #e0e0e0;
-}
+.app.dark-mode { background-color: #1a1a2e; color: #e0e0e0; }
 
-.dark-mode .progress {
-  background-color: #0f3460;
-}
-
-/* Verse card styles */
+/* ── Verse card ─────────────────────────────────────────── */
 .verse-card {
   border-left: 4px solid #0d6efd;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .verse-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-.dark-mode .verse-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
+.dark-mode .verse-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 
-.verse-reference {
-  color: #0d6efd;
-  font-weight: 600;
-}
+.verse-reference { color: #0d6efd; font-weight: 600; }
+.verse-text { font-style: italic; line-height: 1.7; }
+.verse-text-large { font-size: 1.25rem; font-style: italic; line-height: 1.85; }
 
-.verse-text {
-  font-style: italic;
-  line-height: 1.6;
-}
+/* ── Tag badges ─────────────────────────────────────────── */
+.tag-badge { font-size: 0.72rem; font-weight: 500; padding: 0.3em 0.6em; }
+.tag-badge.clickable:hover { opacity: 0.8; }
 
-.verse-text-large {
-  font-size: 1.3rem;
-  font-style: italic;
-  line-height: 1.8;
-}
+/* ── Streak card ────────────────────────────────────────── */
+.streak-card { border: 2px solid #ffc107; }
+.streak-flame { font-size: 2.5rem; }
+.streak-number { font-size: 3rem; font-weight: 700; color: #ffc107; }
 
-/* Tag badges */
-.tag-badge {
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.3em 0.6em;
-}
+/* ── Stat cards ─────────────────────────────────────────── */
+.stat-card { transition: transform 0.2s; }
+.stat-card:hover { transform: translateY(-3px); }
+.stat-number { font-size: 2.5rem; font-weight: 700; }
 
-.tag-badge.clickable:hover {
-  opacity: 0.8;
-}
+/* ── Review card ────────────────────────────────────────── */
+.review-card { border: 2px solid #0d6efd; }
 
-/* Streak card */
-.streak-card {
-  border: 2px solid #ffc107;
-}
-
-.streak-flame {
-  font-size: 2.5rem;
-}
-
-.streak-number {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #ffc107;
-}
-
-/* Stat cards */
-.stat-card {
-  transition: transform 0.2s;
-}
-
-.stat-card:hover {
-  transform: translateY(-3px);
-}
-
-.stat-number {
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-/* Review card */
-.review-card {
-  border: 2px solid #0d6efd;
-  min-height: 300px;
-}
-
-/* Add verse form */
+/* ── Add verse form ─────────────────────────────────────── */
 .add-verse-form {
   border: 1px dashed #6c757d;
   background-color: #f8f9fa;
@@ -150,18 +99,79 @@ body {
   border-color: #4a4a6e;
 }
 
-/* Smooth transitions for dark mode toggle */
-.app {
-  min-height: 100vh;
-  transition: background-color 0.3s, color 0.3s;
+/* ── Quiz mode ──────────────────────────────────────────── */
+.quiz-result {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1.15rem;
+  line-height: 1.9;
 }
 
-.app.dark-mode {
-  background-color: #1a1a2e;
-  color: #e0e0e0;
+.quiz-word { display: inline; }
+
+.quiz-correct {
+  color: #198754;
+  font-weight: 600;
 }
 
-/* Dark mode switch styling */
-#dark-mode-switch {
-  cursor: pointer;
+.quiz-incorrect {
+  color: #dc3545;
+  font-weight: 600;
+  text-decoration: underline;
 }
+
+/* ── Review chart ───────────────────────────────────────── */
+.review-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 140px;
+  padding-top: 24px;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.chart-count {
+  font-size: 0.72rem;
+  color: #6c757d;
+  height: 18px;
+  line-height: 18px;
+}
+
+.chart-bar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 2px;
+}
+
+.chart-bar {
+  width: 100%;
+  background-color: #0d6efd;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.4s ease;
+  min-height: 4px;
+}
+
+.chart-bar-today { background-color: #198754; }
+.chart-bar-empty { background-color: #dee2e6; opacity: 0.5; }
+
+.dark-mode .chart-bar-empty { background-color: #2a2a4e; }
+.dark-mode .chart-count { color: #8888aa; }
+
+.chart-label {
+  font-size: 0.7rem;
+  color: #6c757d;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+.dark-mode .chart-label { color: #8888aa; }

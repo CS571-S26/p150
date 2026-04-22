@@ -1,23 +1,59 @@
 import { useState } from 'react'
-import { Form, Button, Card, Row, Col } from 'react-bootstrap'
+import { Form, Button, Card, Row, Col, Spinner, Alert } from 'react-bootstrap'
+
+async function fetchVerse(reference) {
+  const encoded = encodeURIComponent(reference)
+  const res = await fetch(`https://bible-api.com/${encoded}?translation=kjv`)
+  if (!res.ok) throw new Error('Verse not found')
+  const data = await res.json()
+  if (data.error) throw new Error(data.error)
+  return { reference: data.reference, text: data.text.trim() }
+}
 
 function AddVerseForm({ onAdd }) {
   const [reference, setReference] = useState('')
   const [text, setText] = useState('')
   const [tagInput, setTagInput] = useState('')
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [lookupError, setLookupError] = useState('')
+
+  const handleLookup = async () => {
+    if (!reference.trim()) return
+    setLoading(true)
+    setLookupError('')
+    try {
+      const result = await fetchVerse(reference.trim())
+      setReference(result.reference)
+      setText(result.text)
+    } catch (err) {
+      setLookupError(`Could not find "${reference}". Check the reference and try again.`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleLookup() }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!reference.trim() || !text.trim()) return
-    const tags = tagInput
-      .split(',')
-      .map(t => t.trim().toLowerCase())
-      .filter(t => t.length > 0)
+    const tags = tagInput.split(',').map(t => t.trim().toLowerCase()).filter(t => t.length > 0)
     onAdd({ reference: reference.trim(), text: text.trim(), tags })
     setReference('')
     setText('')
     setTagInput('')
+    setLookupError('')
+    setOpen(false)
+  }
+
+  const handleCancel = () => {
+    setReference('')
+    setText('')
+    setTagInput('')
+    setLookupError('')
     setOpen(false)
   }
 
@@ -34,45 +70,61 @@ function AddVerseForm({ onAdd }) {
       <Card.Body>
         <Card.Title>Add a New Verse</Card.Title>
         <Form onSubmit={handleSubmit}>
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
+          <Row className="align-items-end mb-3">
+            <Col md={7}>
+              <Form.Group>
                 <Form.Label>Reference</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="e.g., John 3:16"
                   value={reference}
                   onChange={(e) => setReference(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   required
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Tags (comma-separated)</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="e.g., faith, love, salvation"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                />
-              </Form.Group>
+            <Col md={5}>
+              <Button
+                variant="outline-primary"
+                className="w-100"
+                onClick={handleLookup}
+                disabled={loading || !reference.trim()}
+              >
+                {loading
+                  ? <><Spinner size="sm" className="me-1" />Looking up...</>
+                  : 'Lookup Verse (KJV)'}
+              </Button>
             </Col>
           </Row>
+
+          {lookupError && <Alert variant="danger" className="py-2">{lookupError}</Alert>}
+
           <Form.Group className="mb-3">
             <Form.Label>Verse Text</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Enter the verse text..."
+              placeholder="Type verse text, or use Lookup above to auto-fill..."
               value={text}
               onChange={(e) => setText(e.target.value)}
               required
             />
           </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Tags <span className="text-muted fw-normal">(comma-separated)</span></Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="e.g., faith, love, salvation"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+            />
+          </Form.Group>
+
           <div className="d-flex gap-2">
-            <Button type="submit" variant="success">Save Verse</Button>
-            <Button variant="outline-secondary" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="success" disabled={loading}>Save Verse</Button>
+            <Button variant="outline-secondary" onClick={handleCancel}>Cancel</Button>
           </div>
         </Form>
       </Card.Body>

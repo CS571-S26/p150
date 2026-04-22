@@ -7,56 +7,76 @@ import ReviewPage from './pages/ReviewPage'
 import ProgressPage from './pages/ProgressPage'
 import './App.css'
 
+const INTERVALS = { again: 1, hard: 3, good: 7, easy: 14 }
+
+function addDays(dateStr, days) {
+  const d = dateStr ? new Date(dateStr) : new Date()
+  d.setDate(d.getDate() + days)
+  return d.toISOString().split('T')[0]
+}
+
+const TODAY = new Date().toISOString().split('T')[0]
+
 const SAMPLE_VERSES = [
   {
     id: 1,
     reference: 'John 3:16',
-    text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
+    text: 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.',
     tags: ['love', 'salvation', 'faith'],
     dateAdded: '2026-03-15',
-    lastReviewed: '2026-04-07',
+    lastReviewed: '2026-04-21',
     timesReviewed: 12,
     memorized: true,
+    nextReviewDate: TODAY,
+    interval: 7,
   },
   {
     id: 2,
     reference: 'Philippians 4:13',
-    text: 'I can do all this through him who gives me strength.',
+    text: 'I can do all things through Christ which strengtheneth me.',
     tags: ['strength', 'faith'],
     dateAdded: '2026-03-20',
-    lastReviewed: '2026-04-06',
+    lastReviewed: '2026-04-20',
     timesReviewed: 8,
     memorized: true,
+    nextReviewDate: TODAY,
+    interval: 7,
   },
   {
     id: 3,
     reference: 'Psalm 23:1',
-    text: 'The Lord is my shepherd, I lack nothing.',
+    text: 'The Lord is my shepherd; I shall not want.',
     tags: ['comfort', 'trust'],
     dateAdded: '2026-04-01',
-    lastReviewed: '2026-04-05',
+    lastReviewed: '2026-04-19',
     timesReviewed: 4,
     memorized: false,
+    nextReviewDate: TODAY,
+    interval: 3,
   },
   {
     id: 4,
     reference: 'Proverbs 3:5-6',
-    text: 'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.',
+    text: 'Trust in the Lord with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.',
     tags: ['trust', 'wisdom'],
     dateAdded: '2026-04-03',
     lastReviewed: null,
     timesReviewed: 1,
     memorized: false,
+    nextReviewDate: addDays(TODAY, 2),
+    interval: 3,
   },
   {
     id: 5,
     reference: 'Romans 8:28',
-    text: 'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.',
+    text: 'And we know that all things work together for good to them that love God, to them who are the called according to his purpose.',
     tags: ['faith', 'hope'],
     dateAdded: '2026-04-05',
     lastReviewed: null,
     timesReviewed: 0,
     memorized: false,
+    nextReviewDate: null,
+    interval: null,
   },
 ]
 
@@ -72,58 +92,64 @@ function loadFromStorage(key, fallback) {
 function App() {
   const [darkMode, setDarkMode] = useState(() => loadFromStorage('darkMode', false))
   const [verses, setVerses] = useState(() => loadFromStorage('verses', SAMPLE_VERSES))
-  const [streak, setStreak] = useState(() => loadFromStorage('streak', { current: 3, best: 7, lastDate: '2026-04-07' }))
+  const [streak, setStreak] = useState(() => loadFromStorage('streak', { current: 3, best: 7, lastDate: '2026-04-21' }))
   const [reviewHistory, setReviewHistory] = useState(() => loadFromStorage('reviewHistory', [
-    { date: '2026-04-05', count: 3 },
-    { date: '2026-04-06', count: 5 },
-    { date: '2026-04-07', count: 4 },
+    { date: '2026-04-17', count: 2 },
+    { date: '2026-04-18', count: 4 },
+    { date: '2026-04-19', count: 3 },
+    { date: '2026-04-20', count: 5 },
+    { date: '2026-04-21', count: 4 },
   ]))
 
-  useEffect(() => {
-    localStorage.setItem('verses', JSON.stringify(verses))
-  }, [verses])
-
+  useEffect(() => { localStorage.setItem('verses', JSON.stringify(verses)) }, [verses])
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode))
     document.body.className = darkMode ? 'dark-mode' : ''
   }, [darkMode])
-
-  useEffect(() => {
-    localStorage.setItem('streak', JSON.stringify(streak))
-  }, [streak])
-
-  useEffect(() => {
-    localStorage.setItem('reviewHistory', JSON.stringify(reviewHistory))
-  }, [reviewHistory])
+  useEffect(() => { localStorage.setItem('streak', JSON.stringify(streak)) }, [streak])
+  useEffect(() => { localStorage.setItem('reviewHistory', JSON.stringify(reviewHistory)) }, [reviewHistory])
 
   const addVerse = (verse) => {
-    setVerses([...verses, { ...verse, id: Date.now(), dateAdded: new Date().toISOString().split('T')[0], lastReviewed: null, timesReviewed: 0, memorized: false }])
+    setVerses([...verses, {
+      ...verse,
+      id: Date.now(),
+      dateAdded: TODAY,
+      lastReviewed: null,
+      timesReviewed: 0,
+      memorized: false,
+      nextReviewDate: null,
+      interval: null,
+    }])
   }
 
-  const deleteVerse = (id) => {
-    setVerses(verses.filter(v => v.id !== id))
-  }
+  const deleteVerse = (id) => setVerses(verses.filter(v => v.id !== id))
 
   const toggleMemorized = (id) => {
     setVerses(verses.map(v => v.id === id ? { ...v, memorized: !v.memorized } : v))
   }
 
-  const markReviewed = (id) => {
+  const markReviewed = (id, rating = 'good') => {
     const today = new Date().toISOString().split('T')[0]
-    setVerses(verses.map(v => v.id === id ? { ...v, lastReviewed: today, timesReviewed: v.timesReviewed + 1 } : v))
+    const days = INTERVALS[rating]
+    const nextReviewDate = addDays(today, days)
+
+    setVerses(verses.map(v => v.id === id ? {
+      ...v,
+      lastReviewed: today,
+      timesReviewed: v.timesReviewed + 1,
+      nextReviewDate,
+      interval: days,
+    } : v))
 
     setReviewHistory(prev => {
       const existing = prev.find(r => r.date === today)
-      if (existing) {
-        return prev.map(r => r.date === today ? { ...r, count: r.count + 1 } : r)
-      }
+      if (existing) return prev.map(r => r.date === today ? { ...r, count: r.count + 1 } : r)
       return [...prev, { date: today, count: 1 }]
     })
 
     setStreak(prev => {
-      const today = new Date().toISOString().split('T')[0]
+      const yesterday = addDays(today, -1)
       if (prev.lastDate === today) return prev
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
       const newCurrent = prev.lastDate === yesterday ? prev.current + 1 : 1
       return { current: newCurrent, best: Math.max(prev.best, newCurrent), lastDate: today }
     })
