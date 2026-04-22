@@ -2,6 +2,14 @@ import { useMemo } from 'react'
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import StreakTracker from '../components/StreakTracker'
+import TagBadge from '../components/TagBadge'
+
+function getDailyVerse(verses) {
+  if (verses.length === 0) return null
+  const today = new Date().toISOString().split('T')[0]
+  const seed = parseInt(today.replace(/-/g, ''), 10)
+  return verses[seed % verses.length]
+}
 
 function HomePage({ verses, streak }) {
   const today = new Date().toISOString().split('T')[0]
@@ -12,6 +20,8 @@ function HomePage({ verses, streak }) {
     return { memorized, dueToday }
   }, [verses, today])
 
+  const verseOfTheDay = useMemo(() => getDailyVerse(verses), [verses])
+
   return (
     <Container className="py-4">
       <div className="text-center mb-4">
@@ -20,6 +30,26 @@ function HomePage({ verses, streak }) {
           Hide God's Word in your heart. Memorize, review, and track your progress.
         </p>
       </div>
+
+      {/* Verse of the Day */}
+      {verseOfTheDay && (
+        <Row className="justify-content-center mb-4">
+          <Col md={8}>
+            <Card className="verse-of-day-card">
+              <Card.Body className="text-center py-4">
+                <p className="text-muted small text-uppercase fw-semibold mb-2 letter-spacing">
+                  Verse of the Day
+                </p>
+                <p className="verse-text-large mb-3">"{verseOfTheDay.text}"</p>
+                <p className="verse-reference fs-5 mb-2">— {verseOfTheDay.reference}</p>
+                <div className="d-flex flex-wrap gap-1 justify-content-center">
+                  {verseOfTheDay.tags.map(tag => <TagBadge key={tag} tag={tag} />)}
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      )}
 
       <Row className="justify-content-center mb-4">
         <Col md={4} className="mb-3">

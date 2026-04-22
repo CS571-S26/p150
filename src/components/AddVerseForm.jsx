@@ -1,9 +1,17 @@
 import { useState } from 'react'
 import { Form, Button, Card, Row, Col, Spinner, Alert } from 'react-bootstrap'
 
-async function fetchVerse(reference) {
+const TRANSLATIONS = [
+  { id: 'kjv',   label: 'KJV — King James Version' },
+  { id: 'web',   label: 'WEB — World English Bible' },
+  { id: 'asv',   label: 'ASV — American Standard (1901)' },
+  { id: 'bbe',   label: 'BBE — Bible in Basic English' },
+  { id: 'oeb-us',label: 'OEB — Open English Bible' },
+]
+
+async function fetchVerse(reference, translation) {
   const encoded = encodeURIComponent(reference)
-  const res = await fetch(`https://bible-api.com/${encoded}?translation=kjv`)
+  const res = await fetch(`https://bible-api.com/${encoded}?translation=${translation}`)
   if (!res.ok) throw new Error('Verse not found')
   const data = await res.json()
   if (data.error) throw new Error(data.error)
@@ -14,19 +22,23 @@ function AddVerseForm({ onAdd }) {
   const [reference, setReference] = useState('')
   const [text, setText] = useState('')
   const [tagInput, setTagInput] = useState('')
+  const [translation, setTranslation] = useState('kjv')
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [lookupError, setLookupError] = useState('')
+  const [lookedUpTranslation, setLookedUpTranslation] = useState('')
 
   const handleLookup = async () => {
     if (!reference.trim()) return
     setLoading(true)
     setLookupError('')
+    setLookedUpTranslation('')
     try {
-      const result = await fetchVerse(reference.trim())
+      const result = await fetchVerse(reference.trim(), translation)
       setReference(result.reference)
       setText(result.text)
-    } catch (err) {
+      setLookedUpTranslation(TRANSLATIONS.find(t => t.id === translation)?.label || translation)
+    } catch {
       setLookupError(`Could not find "${reference}". Check the reference and try again.`)
     } finally {
       setLoading(false)
@@ -46,6 +58,7 @@ function AddVerseForm({ onAdd }) {
     setText('')
     setTagInput('')
     setLookupError('')
+    setLookedUpTranslation('')
     setOpen(false)
   }
 
@@ -54,6 +67,7 @@ function AddVerseForm({ onAdd }) {
     setText('')
     setTagInput('')
     setLookupError('')
+    setLookedUpTranslation('')
     setOpen(false)
   }
 
@@ -70,8 +84,8 @@ function AddVerseForm({ onAdd }) {
       <Card.Body>
         <Card.Title>Add a New Verse</Card.Title>
         <Form onSubmit={handleSubmit}>
-          <Row className="align-items-end mb-3">
-            <Col md={7}>
+          <Row className="mb-2">
+            <Col md={5}>
               <Form.Group>
                 <Form.Label>Reference</Form.Label>
                 <Form.Control
@@ -84,7 +98,17 @@ function AddVerseForm({ onAdd }) {
                 />
               </Form.Group>
             </Col>
-            <Col md={5}>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Translation</Form.Label>
+                <Form.Select value={translation} onChange={(e) => setTranslation(e.target.value)}>
+                  {TRANSLATIONS.map(t => (
+                    <option key={t.id} value={t.id}>{t.label}</option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={3} className="d-flex align-items-end">
               <Button
                 variant="outline-primary"
                 className="w-100"
@@ -93,15 +117,20 @@ function AddVerseForm({ onAdd }) {
               >
                 {loading
                   ? <><Spinner size="sm" className="me-1" />Looking up...</>
-                  : 'Lookup Verse (KJV)'}
+                  : 'Lookup'}
               </Button>
             </Col>
           </Row>
 
-          {lookupError && <Alert variant="danger" className="py-2">{lookupError}</Alert>}
+          {lookupError && <Alert variant="danger" className="py-2 mb-2">{lookupError}</Alert>}
 
           <Form.Group className="mb-3">
-            <Form.Label>Verse Text</Form.Label>
+            <Form.Label>
+              Verse Text
+              {lookedUpTranslation && (
+                <span className="text-muted fw-normal ms-2 small">— {lookedUpTranslation}</span>
+              )}
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}

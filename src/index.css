@@ -121,6 +121,20 @@ body {
   text-decoration: underline;
 }
 
+/* ── Verse of the Day ───────────────────────────────────── */
+.verse-of-day-card {
+  border: 2px solid #0d6efd;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #fff 100%);
+}
+
+.dark-mode .verse-of-day-card {
+  background: linear-gradient(135deg, #0f1f4a 0%, #16213e 100%);
+  border-color: #4a90d9;
+}
+
+.letter-spacing { letter-spacing: 0.08em; }
+
 /* ── Review chart ───────────────────────────────────────── */
 .review-chart {
   display: flex;
