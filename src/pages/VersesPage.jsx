@@ -3,11 +3,13 @@ import { Container, Badge, ButtonGroup, Button } from 'react-bootstrap'
 import VerseCard from '../components/VerseCard'
 import AddVerseForm from '../components/AddVerseForm'
 import SearchFilter from '../components/SearchFilter'
+import BulkImport from '../components/BulkImport'
+import EmptyState from '../components/EmptyState'
 
 const MEMORIZED_FILTERS = [
-  { value: 'all',          label: 'All' },
-  { value: 'unmemorized',  label: 'Not Memorized' },
-  { value: 'memorized',    label: 'Memorized' },
+  { value: 'all',         label: 'All' },
+  { value: 'unmemorized', label: 'Not Memorized' },
+  { value: 'memorized',   label: 'Memorized' },
 ]
 
 function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
@@ -36,24 +38,35 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
 
   const memorizedCount = useMemo(() => verses.filter(v => v.memorized).length, [verses])
 
+  const clearFilters = () => {
+    setSearchTerm('')
+    setSelectedTag('')
+    setMemorizedFilter('all')
+  }
+
   return (
     <Container className="py-4" style={{ maxWidth: 800 }}>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0">
+      <header className="d-flex justify-content-between align-items-center mb-3">
+        <h1 className="h2 mb-0">
           My Verses <Badge bg="secondary">{verses.length}</Badge>
-        </h2>
-        <span className="text-muted small">{memorizedCount} memorized</span>
-      </div>
+        </h1>
+        <span className="text-muted small" aria-live="polite">
+          {memorizedCount} memorized
+        </span>
+      </header>
 
       <AddVerseForm onAdd={addVerse} />
+      <BulkImport onImport={addVerse} />
 
-      <div className="mb-3">
-        <ButtonGroup size="sm">
+      <section aria-labelledby="filter-heading" className="mb-3">
+        <h2 id="filter-heading" className="visually-hidden">Filter verses</h2>
+        <ButtonGroup size="sm" aria-label="Filter by memorization status">
           {MEMORIZED_FILTERS.map(f => (
             <Button
               key={f.value}
               variant={memorizedFilter === f.value ? 'primary' : 'outline-primary'}
               onClick={() => setMemorizedFilter(f.value)}
+              aria-pressed={memorizedFilter === f.value}
             >
               {f.label}
               {f.value === 'memorized' && (
@@ -65,7 +78,7 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
             </Button>
           ))}
         </ButtonGroup>
-      </div>
+      </section>
 
       <SearchFilter
         searchTerm={searchTerm}
@@ -75,28 +88,39 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
         allTags={allTags}
       />
 
-      {filtered.length === 0 ? (
-        <p className="text-muted text-center py-4">
-          {verses.length === 0
-            ? 'No verses yet. Add your first verse above!'
-            : 'No verses match your filters.'}
-        </p>
-      ) : (
-        filtered.map(verse => (
-          <VerseCard
-            key={verse.id}
-            verse={verse}
-            onDelete={deleteVerse}
-            onToggleMemorized={toggleMemorized}
-          />
-        ))
-      )}
+      <section aria-labelledby="verses-heading" aria-live="polite">
+        <h2 id="verses-heading" className="visually-hidden">Verse list</h2>
 
-      {filtered.length > 0 && (
-        <p className="text-muted text-center small mt-2">
-          Showing {filtered.length} of {verses.length} verses
-        </p>
-      )}
+        {verses.length === 0 ? (
+          <EmptyState
+            icon="📖"
+            title="No verses yet"
+            message="Add your first verse using the form above to begin your memorization journey."
+          />
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            icon="🔍"
+            title="No matches found"
+            message="No verses match your current filters."
+            actionLabel="Clear Filters"
+            onAction={clearFilters}
+          />
+        ) : (
+          <>
+            {filtered.map(verse => (
+              <VerseCard
+                key={verse.id}
+                verse={verse}
+                onDelete={deleteVerse}
+                onToggleMemorized={toggleMemorized}
+              />
+            ))}
+            <p className="text-muted text-center small mt-2">
+              Showing {filtered.length} of {verses.length} verses
+            </p>
+          </>
+        )}
+      </section>
     </Container>
   )
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import Navigation from './components/Navigation'
+import Footer from './components/Footer'
+import OnboardingModal from './components/OnboardingModal'
 import HomePage from './pages/HomePage'
 import VersesPage from './pages/VersesPage'
 import ReviewPage from './pages/ReviewPage'
@@ -100,6 +102,12 @@ function App() {
     { date: '2026-04-20', count: 5 },
     { date: '2026-04-21', count: 4 },
   ]))
+  const [showOnboarding, setShowOnboarding] = useState(() => !loadFromStorage('onboardingSeen', false))
+
+  const handleCloseOnboarding = () => {
+    setShowOnboarding(false)
+    localStorage.setItem('onboardingSeen', JSON.stringify(true))
+  }
 
   useEffect(() => { localStorage.setItem('verses', JSON.stringify(verses)) }, [verses])
   useEffect(() => {
@@ -158,13 +166,18 @@ function App() {
   return (
     <HashRouter>
       <div className={darkMode ? 'app dark-mode' : 'app'}>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <Navigation darkMode={darkMode} setDarkMode={setDarkMode} />
-        <Routes>
-          <Route path="/" element={<HomePage verses={verses} streak={streak} />} />
-          <Route path="/verses" element={<VersesPage verses={verses} addVerse={addVerse} deleteVerse={deleteVerse} toggleMemorized={toggleMemorized} />} />
-          <Route path="/review" element={<ReviewPage verses={verses} markReviewed={markReviewed} toggleMemorized={toggleMemorized} />} />
-          <Route path="/progress" element={<ProgressPage verses={verses} streak={streak} reviewHistory={reviewHistory} />} />
-        </Routes>
+        <main id="main-content">
+          <Routes>
+            <Route path="/" element={<HomePage verses={verses} streak={streak} />} />
+            <Route path="/verses" element={<VersesPage verses={verses} addVerse={addVerse} deleteVerse={deleteVerse} toggleMemorized={toggleMemorized} />} />
+            <Route path="/review" element={<ReviewPage verses={verses} markReviewed={markReviewed} toggleMemorized={toggleMemorized} />} />
+            <Route path="/progress" element={<ProgressPage verses={verses} streak={streak} reviewHistory={reviewHistory} />} />
+          </Routes>
+        </main>
+        <Footer />
+        <OnboardingModal show={showOnboarding} onClose={handleCloseOnboarding} />
       </div>
     </HashRouter>
   )

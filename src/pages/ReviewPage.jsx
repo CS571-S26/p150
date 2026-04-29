@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
-import { Container, Card, Button, ProgressBar, Alert, Badge, Form, ButtonGroup } from 'react-bootstrap'
+import { Container, Card, Button, ProgressBar, Alert, Badge, Form } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import TagBadge from '../components/TagBadge'
+import EmptyState from '../components/EmptyState'
 
 function normalizeWord(w) {
   return w.toLowerCase().replace(/[.,;:!?'"()\-]/g, '').trim()
@@ -46,9 +48,15 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
 
   if (reviewQueue.length === 0) {
     return (
-      <Container className="py-4 text-center">
-        <h2>Review</h2>
-        <Alert variant="info" className="mt-4">No verses to review. Add some verses first!</Alert>
+      <Container className="py-4">
+        <h1 className="h2 mb-3">Daily Review</h1>
+        <EmptyState
+          icon="✨"
+          title="No verses yet"
+          message="Add some verses to start memorizing. Then come back here to review them."
+          actionLabel="Add Verses"
+          onAction={() => window.location.hash = '#/verses'}
+        />
       </Container>
     )
   }
@@ -93,11 +101,11 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
 
   return (
     <Container className="py-4" style={{ maxWidth: 700 }}>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0">
+      <header className="d-flex justify-content-between align-items-center mb-3">
+        <h1 className="h2 mb-0">
           Daily Review
           {dueCount > 0 && <Badge bg="danger" className="ms-2">{dueCount} due</Badge>}
-        </h2>
+        </h1>
         <Form.Check
           type="switch"
           id="quiz-mode-switch"
@@ -105,8 +113,9 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
           checked={quizMode}
           onChange={switchMode}
           className="fs-6"
+          aria-label={`Quiz mode is ${quizMode ? 'on' : 'off'}`}
         />
-      </div>
+      </header>
 
       <div className="mb-3">
         <div className="d-flex justify-content-between mb-1">
@@ -126,7 +135,7 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
         <Card.Body className="py-4 px-4">
 
           <div className="d-flex justify-content-between align-items-start mb-3">
-            <h3 className="verse-reference mb-0">{currentVerse.reference}</h3>
+            <h2 className="h3 verse-reference mb-0">{currentVerse.reference}</h2>
             <div className="d-flex flex-column align-items-end gap-1">
               {currentVerse.memorized && <Badge bg="success">Memorized</Badge>}
               {isDue
@@ -146,15 +155,22 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
               {!checked ? (
                 <>
                   <Form.Group className="mb-3">
-                    <Form.Label className="text-muted">Type the verse from memory:</Form.Label>
+                    <Form.Label htmlFor="quiz-answer" className="text-muted">
+                      Type the verse from memory:
+                    </Form.Label>
                     <Form.Control
+                      id="quiz-answer"
                       as="textarea"
                       rows={4}
                       placeholder="Start typing..."
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       autoFocus
+                      aria-describedby="quiz-help"
                     />
+                    <Form.Text id="quiz-help" className="text-muted">
+                      Press Check Answer when you're done.
+                    </Form.Text>
                   </Form.Group>
                   <Button variant="primary" onClick={handleCheck} disabled={!userAnswer.trim()}>
                     Check Answer
@@ -162,14 +178,18 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
                 </>
               ) : (
                 <>
-                  <div className="quiz-score mb-3">
+                  <div className="quiz-score mb-3" role="status" aria-live="polite">
                     <span className={`fs-4 fw-bold ${quizScore >= 80 ? 'text-success' : quizScore >= 50 ? 'text-warning' : 'text-danger'}`}>
                       {quizScore}% correct
                     </span>
                   </div>
-                  <div className="quiz-result mb-4 p-3 rounded">
+                  <div className="quiz-result mb-4 p-3 rounded" aria-label="Verse with correctness highlighting">
                     {quizResult.map((w, i) => (
-                      <span key={i} className={`quiz-word ${w.correct ? 'quiz-correct' : 'quiz-incorrect'}`}>
+                      <span
+                        key={i}
+                        className={`quiz-word ${w.correct ? 'quiz-correct' : 'quiz-incorrect'}`}
+                        aria-label={w.correct ? `${w.original} correct` : `${w.original} incorrect`}
+                      >
                         {w.original}{' '}
                       </span>
                     ))}
@@ -193,11 +213,16 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
 
           {/* --- SRS RATING BUTTONS (shown after reveal or after quiz check) --- */}
           {(showText || checked) && (
-            <div className="mt-3">
+            <div className="mt-3" role="group" aria-label="Rate your recall">
               <p className="text-muted small mb-2">How well did you know it?</p>
               <div className="d-flex gap-2 flex-wrap">
                 {SRS_BUTTONS.map(({ rating, label, variant, days }) => (
-                  <Button key={rating} variant={variant} onClick={() => handleRate(rating)}>
+                  <Button
+                    key={rating}
+                    variant={variant}
+                    onClick={() => handleRate(rating)}
+                    aria-label={`Rate as ${label}, schedule next review in ${days}`}
+                  >
                     {label}
                     <span className="d-block" style={{ fontSize: '0.7rem', opacity: 0.8 }}>+{days}</span>
                   </Button>

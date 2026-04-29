@@ -27,7 +27,7 @@ function ProgressPage({ verses, streak, reviewHistory }) {
 
   return (
     <Container className="py-4" style={{ maxWidth: 900 }}>
-      <h2 className="mb-4">Progress Dashboard</h2>
+      <h1 className="h2 mb-4">Progress Dashboard</h1>
 
       <Row className="mb-4">
         <Col md={3} className="mb-3">
@@ -77,7 +77,7 @@ function ProgressPage({ verses, streak, reviewHistory }) {
         <Col md={7} className="mb-4">
           <Card className="h-100">
             <Card.Body>
-              <Card.Title>Reviews This Week</Card.Title>
+              <Card.Title as="h2" className="h5">Reviews This Week</Card.Title>
               <ReviewChart reviewHistory={reviewHistory} />
             </Card.Body>
           </Card>
@@ -85,7 +85,7 @@ function ProgressPage({ verses, streak, reviewHistory }) {
         <Col md={5} className="mb-4">
           <Card className="h-100">
             <Card.Body>
-              <Card.Title>Progress by Tag</Card.Title>
+              <Card.Title as="h2" className="h5">Progress by Tag</Card.Title>
               {tagStats.length === 0 ? (
                 <p className="text-muted">No tags yet.</p>
               ) : (
@@ -112,7 +112,7 @@ function ProgressPage({ verses, streak, reviewHistory }) {
         <Col>
           <Card>
             <Card.Body>
-              <Card.Title>All Verses — Review Schedule</Card.Title>
+              <Card.Title as="h2" className="h5">All Verses — Review Schedule</Card.Title>
               <div className="table-responsive">
                 <table className="table table-sm table-hover mb-0">
                   <thead>

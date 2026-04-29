@@ -4,6 +4,43 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* ── Accessibility ──────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9999;
+  padding: 0.75rem 1rem;
+  background: #0d6efd;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0 0 6px 0;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  left: 0;
+  outline: 3px solid #ffc107;
+}
+
+*:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.dark-mode *:focus-visible {
+  outline-color: #4a90d9;
+}
+
+/* Improve text-muted contrast in light mode (WCAG AA) */
+.text-muted {
+  color: #545b62 !important;
+}
+
+.dark-mode .text-muted {
+  color: #a8a8c8 !important;
+}
+
 /* ── Dark mode ──────────────────────────────────────────── */
 .dark-mode {
   background-color: #1a1a2e;
@@ -49,10 +86,79 @@ body {
 /* ── App shell ──────────────────────────────────────────── */
 .app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   transition: background-color 0.3s, color 0.3s;
 }
 
+.app main { flex: 1 0 auto; }
+
 .app.dark-mode { background-color: #1a1a2e; color: #e0e0e0; }
+
+/* ── Footer ─────────────────────────────────────────────── */
+.app-footer {
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.dark-mode .app-footer {
+  background-color: #0f1830;
+  border-top-color: #2a2a4e;
+}
+
+.footer-link {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.footer-link:hover,
+.footer-link:focus { text-decoration: underline; }
+
+.dark-mode .footer-link { color: #6ba5e7; }
+
+/* ── Empty state ────────────────────────────────────────── */
+.empty-state-card {
+  border: 2px dashed #ced4da;
+  background-color: transparent;
+}
+
+.dark-mode .empty-state-card {
+  border-color: #2a2a4e;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+/* ── Bulk import ────────────────────────────────────────── */
+.bulk-import-card {
+  border: 1px solid #6c757d;
+  background-color: #fafbfc;
+}
+
+.dark-mode .bulk-import-card {
+  background-color: #1a1a3e;
+  border-color: #4a4a6e;
+}
+
+.bulk-import-card code {
+  background-color: #e9ecef;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  color: #d63384;
+}
+
+.dark-mode .bulk-import-card code {
+  background-color: #0f3460;
+  color: #f78bbf;
+}
+
+/* ── Onboarding ─────────────────────────────────────────── */
+.onboarding-steps li {
+  line-height: 1.6;
+}
 
 /* ── Verse card ─────────────────────────────────────────── */
 .verse-card {

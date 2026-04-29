@@ -7,19 +7,25 @@ function SearchFilter({ searchTerm, setSearchTerm, selectedTag, setSelectedTag, 
       <Row className="align-items-end">
         <Col md={8}>
           <Form.Group>
-            <Form.Label>Search verses</Form.Label>
+            <Form.Label htmlFor="verse-search-input">Search verses</Form.Label>
             <Form.Control
-              type="text"
+              id="verse-search-input"
+              type="search"
               placeholder="Search by reference or keyword..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-describedby="verse-search-help"
             />
+            <Form.Text id="verse-search-help" className="visually-hidden">
+              Searches verse references and verse text.
+            </Form.Text>
           </Form.Group>
         </Col>
         <Col md={4}>
           <Form.Group>
-            <Form.Label>Filter by tag</Form.Label>
+            <Form.Label htmlFor="verse-tag-filter">Filter by tag</Form.Label>
             <Form.Select
+              id="verse-tag-filter"
               value={selectedTag}
               onChange={(e) => setSelectedTag(e.target.value)}
             >
@@ -32,9 +38,15 @@ function SearchFilter({ searchTerm, setSearchTerm, selectedTag, setSelectedTag, 
         </Col>
       </Row>
       {selectedTag && (
-        <div className="mt-2">
+        <div className="mt-2" aria-live="polite">
           Filtered by: <TagBadge tag={selectedTag} onClick={() => setSelectedTag('')} />
-          <Button variant="link" size="sm" className="p-0 ms-2" onClick={() => setSelectedTag('')}>
+          <Button
+            variant="link"
+            size="sm"
+            className="p-0 ms-2"
+            onClick={() => setSelectedTag('')}
+            aria-label={`Clear ${selectedTag} tag filter`}
+          >
             Clear
           </Button>
         </div>

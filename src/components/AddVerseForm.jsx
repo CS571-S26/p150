@@ -82,7 +82,7 @@ function AddVerseForm({ onAdd }) {
   return (
     <Card className="mb-3 add-verse-form">
       <Card.Body>
-        <Card.Title>Add a New Verse</Card.Title>
+        <Card.Title as="h2" className="h5">Add a New Verse</Card.Title>
         <Form onSubmit={handleSubmit}>
           <Row className="mb-2">
             <Col md={5}>
