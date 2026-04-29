@@ -17,6 +17,12 @@ function compareWords(userText, verseText) {
   }))
 }
 
+function makeHint(text) {
+  return text.replace(/[a-zA-Z]+/g, (word) =>
+    word[0] + '_'.repeat(word.length - 1)
+  )
+}
+
 const SRS_BUTTONS = [
   { rating: 'again', label: 'Again', variant: 'outline-danger', days: '1 day' },
   { rating: 'hard', label: 'Hard', variant: 'outline-warning', days: '3 days' },
@@ -28,6 +34,7 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
   const [quizMode, setQuizMode] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showText, setShowText] = useState(false)
+  const [showHint, setShowHint] = useState(false)
   const [userAnswer, setUserAnswer] = useState('')
   const [checked, setChecked] = useState(false)
   const [reviewedInSession, setReviewedInSession] = useState(new Set())
@@ -74,6 +81,7 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
 
   const goNext = () => {
     setShowText(false)
+    setShowHint(false)
     setUserAnswer('')
     setChecked(false)
     setCurrentIndex(idx + 1)
@@ -93,6 +101,7 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
   const switchMode = () => {
     setQuizMode(!quizMode)
     setShowText(false)
+    setShowHint(false)
     setUserAnswer('')
     setChecked(false)
   }
@@ -202,12 +211,42 @@ function ReviewPage({ verses, markReviewed, toggleMemorized }) {
           {/* --- NORMAL MODE --- */}
           {!quizMode && (
             <>
-              {!showText
-                ? <Button variant="outline-primary" size="lg" className="w-100 mb-4" onClick={() => setShowText(true)}>
+              {showText ? (
+                <p className="verse-text-large mb-4">{currentVerse.text}</p>
+              ) : showHint ? (
+                <>
+                  <p className="hint-text mb-3" aria-label="Hint: first letter of each word">
+                    {makeHint(currentVerse.text)}
+                  </p>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="w-100 mb-4"
+                    onClick={() => setShowText(true)}
+                  >
+                    Reveal Full Verse
+                  </Button>
+                </>
+              ) : (
+                <div className="d-flex gap-2 mb-4">
+                  <Button
+                    variant="outline-secondary"
+                    size="lg"
+                    className="flex-fill"
+                    onClick={() => setShowHint(true)}
+                  >
+                    Show Hint
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    size="lg"
+                    className="flex-fill"
+                    onClick={() => setShowText(true)}
+                  >
                     Reveal Verse
                   </Button>
-                : <p className="verse-text-large mb-4">{currentVerse.text}</p>
-              }
+                </div>
+              )}
             </>
           )}
 

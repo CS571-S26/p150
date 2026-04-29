@@ -1,179 +1,251 @@
+/* ═══════════════════════════════════════════════════════════════
+   Color palette — Sanctuary theme
+   Single source of truth for all colors.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Brand */
+  --color-primary:        #5856D6;
+  --color-primary-rgb:    88, 86, 214;
+  --color-primary-hover:  #4744b8;
+  --color-primary-soft:   #ECEBFA;
+
+  /* Accent (streak / highlights) */
+  --color-accent:         #E8A317;
+  --color-accent-rgb:     232, 163, 23;
+  --color-accent-soft:    #FBF1DC;
+
+  /* Surfaces */
+  --color-bg:             #FAF8F2;
+  --color-bg-alt:         #F2EFE6;
+  --color-surface:        #FFFFFF;
+  --color-surface-alt:    #FBF9F4;
+  --color-border:         #E5E1D8;
+  --color-shadow:         rgba(20, 21, 44, 0.08);
+  --color-shadow-strong:  rgba(20, 21, 44, 0.16);
+
+  /* Text */
+  --color-heading:        #1A1A2E;
+  --color-text:           #2D2D3A;
+  --color-muted:          #5C5C66;
+
+  /* Semantic */
+  --color-success:        #2E8B57;
+  --color-success-rgb:    46, 139, 87;
+  --color-danger:         #C73E5C;
+  --color-danger-rgb:     199, 62, 92;
+  --color-warning:        #D4A017;
+  --color-warning-rgb:    212, 160, 23;
+
+  /* Override Bootstrap CSS variables */
+  --bs-primary:           var(--color-primary);
+  --bs-primary-rgb:       var(--color-primary-rgb);
+  --bs-success:           var(--color-success);
+  --bs-success-rgb:       var(--color-success-rgb);
+  --bs-danger:            var(--color-danger);
+  --bs-danger-rgb:        var(--color-danger-rgb);
+  --bs-warning:           var(--color-warning);
+  --bs-warning-rgb:       var(--color-warning-rgb);
+  --bs-body-bg:           var(--color-bg);
+  --bs-body-color:        var(--color-text);
+  --bs-link-color:        var(--color-primary);
+  --bs-link-hover-color:  var(--color-primary-hover);
+  --bs-border-color:      var(--color-border);
+}
+
+.dark-mode {
+  /* Brand — softened for dark backgrounds */
+  --color-primary:        #8B95FF;
+  --color-primary-rgb:    139, 149, 255;
+  --color-primary-hover:  #a3aafe;
+  --color-primary-soft:   #232548;
+
+  --color-accent:         #F5BC52;
+  --color-accent-rgb:     245, 188, 82;
+  --color-accent-soft:    #2a2438;
+
+  --color-bg:             #13142B;
+  --color-bg-alt:         #181A33;
+  --color-surface:        #1C1F3A;
+  --color-surface-alt:    #232648;
+  --color-border:         #2A2D4D;
+  --color-shadow:         rgba(0, 0, 0, 0.4);
+  --color-shadow-strong:  rgba(0, 0, 0, 0.6);
+
+  --color-heading:        #F0EDE2;
+  --color-text:           #D8D5C9;
+  --color-muted:          #A8A6BC;
+
+  --color-success:        #4ED4A2;
+  --color-success-rgb:    78, 212, 162;
+  --color-danger:         #EE6F8C;
+  --color-danger-rgb:     238, 111, 140;
+  --color-warning:        #F5BC52;
+  --color-warning-rgb:    245, 188, 82;
+
+  --bs-primary:           var(--color-primary);
+  --bs-primary-rgb:       var(--color-primary-rgb);
+  --bs-success:           var(--color-success);
+  --bs-success-rgb:       var(--color-success-rgb);
+  --bs-danger:            var(--color-danger);
+  --bs-danger-rgb:        var(--color-danger-rgb);
+  --bs-warning:           var(--color-warning);
+  --bs-warning-rgb:       var(--color-warning-rgb);
+  --bs-body-bg:           var(--color-bg);
+  --bs-body-color:        var(--color-text);
+  --bs-border-color:      var(--color-border);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Base
+   ═══════════════════════════════════════════════════════════════ */
+
 body {
   margin: 0;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   transition: background-color 0.3s, color 0.3s;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-heading);
+}
+
 /* ── Accessibility ──────────────────────────────────────── */
+
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
   z-index: 9999;
   padding: 0.75rem 1rem;
-  background: #0d6efd;
+  background: var(--color-primary);
   color: #fff;
   text-decoration: none;
   border-radius: 0 0 6px 0;
   font-weight: 600;
 }
 
-.skip-link:focus {
-  left: 0;
-  outline: 3px solid #ffc107;
-}
+.skip-link:focus { left: 0; outline: 3px solid var(--color-accent); }
 
 *:focus-visible {
-  outline: 2px solid #0d6efd;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.dark-mode *:focus-visible {
-  outline-color: #4a90d9;
-}
+.text-muted { color: var(--color-muted) !important; }
 
-/* Improve text-muted contrast in light mode (WCAG AA) */
-.text-muted {
-  color: #545b62 !important;
-}
-
-.dark-mode .text-muted {
-  color: #a8a8c8 !important;
-}
-
-/* ── Dark mode ──────────────────────────────────────────── */
-.dark-mode {
-  background-color: #1a1a2e;
-  color: #e0e0e0;
-}
+/* ═══════════════════════════════════════════════════════════════
+   Bootstrap component refinement
+   ═══════════════════════════════════════════════════════════════ */
 
 .dark-mode .card {
-  background-color: #16213e;
-  border-color: #0f3460;
-  color: #e0e0e0;
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
 }
 
 .dark-mode .form-control,
 .dark-mode .form-select {
-  background-color: #0f3460;
-  border-color: #1a1a4e;
-  color: #e0e0e0;
+  background-color: var(--color-surface-alt);
+  border-color: var(--color-border);
+  color: var(--color-text);
 }
 
-.dark-mode .form-control::placeholder { color: #8888aa; }
+.dark-mode .form-control::placeholder { color: var(--color-muted); }
 
 .dark-mode .form-control:focus,
 .dark-mode .form-select:focus {
-  background-color: #0f3460;
-  color: #e0e0e0;
-  border-color: #4a90d9;
-  box-shadow: 0 0 0 0.2rem rgba(74, 144, 217, 0.25);
+  background-color: var(--color-surface-alt);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--color-primary-rgb), 0.25);
 }
 
-.dark-mode .table { color: #e0e0e0; }
+.dark-mode .table { color: var(--color-text); }
 
 .dark-mode .table-hover tbody tr:hover {
-  color: #e0e0e0;
-  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
-.dark-mode .text-muted { color: #8888aa !important; }
+.dark-mode .progress { background-color: var(--color-surface-alt); }
 
-.dark-mode .progress { background-color: #0f3460; }
+.dark-mode .modal-content {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
 
-.dark-mode .quiz-result { background-color: #0f3460; }
+.dark-mode .modal-header,
+.dark-mode .modal-footer {
+  border-color: var(--color-border);
+}
 
-/* ── App shell ──────────────────────────────────────────── */
+.dark-mode .btn-close {
+  filter: invert(0.85) hue-rotate(180deg);
+}
+
+/* Navbar dark variant uses our theme dark, not Bootstrap's default */
+.dark-mode .navbar.bg-dark {
+  background-color: var(--color-bg-alt) !important;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Refine primary button for both modes */
+.btn-primary {
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-bg: var(--color-primary-hover);
+  --bs-btn-hover-border-color: var(--color-primary-hover);
+  --bs-btn-active-bg: var(--color-primary-hover);
+  --bs-btn-active-border-color: var(--color-primary-hover);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   App shell & layout
+   ═══════════════════════════════════════════════════════════════ */
+
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   transition: background-color 0.3s, color 0.3s;
 }
 
 .app main { flex: 1 0 auto; }
 
-.app.dark-mode { background-color: #1a1a2e; color: #e0e0e0; }
-
 /* ── Footer ─────────────────────────────────────────────── */
+
 .app-footer {
-  border-top: 1px solid #dee2e6;
-  background-color: #f8f9fa;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-bg-alt);
   flex-shrink: 0;
 }
 
-.dark-mode .app-footer {
-  background-color: #0f1830;
-  border-top-color: #2a2a4e;
-}
+.footer-link { color: var(--color-primary); text-decoration: none; }
+.footer-link:hover, .footer-link:focus { text-decoration: underline; }
 
-.footer-link {
-  color: #0d6efd;
-  text-decoration: none;
-}
+/* ═══════════════════════════════════════════════════════════════
+   Verse card
+   ═══════════════════════════════════════════════════════════════ */
 
-.footer-link:hover,
-.footer-link:focus { text-decoration: underline; }
-
-.dark-mode .footer-link { color: #6ba5e7; }
-
-/* ── Empty state ────────────────────────────────────────── */
-.empty-state-card {
-  border: 2px dashed #ced4da;
-  background-color: transparent;
-}
-
-.dark-mode .empty-state-card {
-  border-color: #2a2a4e;
-}
-
-.empty-state-icon {
-  font-size: 3rem;
-  line-height: 1;
-}
-
-/* ── Bulk import ────────────────────────────────────────── */
-.bulk-import-card {
-  border: 1px solid #6c757d;
-  background-color: #fafbfc;
-}
-
-.dark-mode .bulk-import-card {
-  background-color: #1a1a3e;
-  border-color: #4a4a6e;
-}
-
-.bulk-import-card code {
-  background-color: #e9ecef;
-  padding: 0.1em 0.35em;
-  border-radius: 3px;
-  color: #d63384;
-}
-
-.dark-mode .bulk-import-card code {
-  background-color: #0f3460;
-  color: #f78bbf;
-}
-
-/* ── Onboarding ─────────────────────────────────────────── */
-.onboarding-steps li {
-  line-height: 1.6;
-}
-
-/* ── Verse card ─────────────────────────────────────────── */
 .verse-card {
-  border-left: 4px solid #0d6efd;
-  transition: transform 0.15s, box-shadow 0.15s;
+  border-left: 4px solid var(--color-primary);
+  border-radius: 8px;
+  transition: transform 0.15s, box-shadow 0.2s;
 }
 
 .verse-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 16px var(--color-shadow);
 }
 
-.dark-mode .verse-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.dark-mode .verse-card:hover { box-shadow: 0 6px 16px var(--color-shadow-strong); }
 
-.verse-reference { color: #0d6efd; font-weight: 600; }
+.verse-reference { color: var(--color-primary); font-weight: 600; }
 .verse-text { font-style: italic; line-height: 1.7; }
 .verse-text-large { font-size: 1.25rem; font-style: italic; line-height: 1.85; }
 
@@ -181,67 +253,123 @@ body {
 .tag-badge { font-size: 0.72rem; font-weight: 500; padding: 0.3em 0.6em; }
 .tag-badge.clickable:hover { opacity: 0.8; }
 
-/* ── Streak card ────────────────────────────────────────── */
-.streak-card { border: 2px solid #ffc107; }
-.streak-flame { font-size: 2.5rem; }
-.streak-number { font-size: 3rem; font-weight: 700; color: #ffc107; }
+/* ═══════════════════════════════════════════════════════════════
+   Stat cards & streak
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ── Stat cards ─────────────────────────────────────────── */
-.stat-card { transition: transform 0.2s; }
-.stat-card:hover { transform: translateY(-3px); }
+.stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px var(--color-shadow);
+}
 .stat-number { font-size: 2.5rem; font-weight: 700; }
 
-/* ── Review card ────────────────────────────────────────── */
-.review-card { border: 2px solid #0d6efd; }
+.streak-card { border: 2px solid var(--color-accent); }
+.streak-flame { font-size: 2.5rem; }
+.streak-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
 
-/* ── Add verse form ─────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Verse of the Day
+   ═══════════════════════════════════════════════════════════════ */
+
+.verse-of-day-card {
+  border: 2px solid var(--color-primary);
+  border-radius: 12px;
+  background: linear-gradient(135deg,
+    var(--color-primary-soft) 0%,
+    var(--color-surface) 100%);
+  box-shadow: 0 4px 16px var(--color-shadow);
+}
+
+.dark-mode .verse-of-day-card {
+  background: linear-gradient(135deg,
+    var(--color-primary-soft) 0%,
+    var(--color-surface) 100%);
+}
+
+.letter-spacing { letter-spacing: 0.08em; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Review card & Quiz
+   ═══════════════════════════════════════════════════════════════ */
+
+.review-card {
+  border: 2px solid var(--color-primary);
+  border-radius: 12px;
+}
+
 .add-verse-form {
-  border: 1px dashed #6c757d;
-  background-color: #f8f9fa;
+  border: 1px dashed var(--color-muted);
+  background-color: var(--color-surface-alt);
 }
 
 .dark-mode .add-verse-form {
-  background-color: #1a1a3e;
-  border-color: #4a4a6e;
+  background-color: var(--color-surface-alt);
+  border-color: var(--color-border);
 }
 
-/* ── Quiz mode ──────────────────────────────────────────── */
+.bulk-import-card {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-alt);
+}
+
+.bulk-import-card code {
+  background-color: var(--color-primary-soft);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* ── Quiz mode results ──────────────────────────────────── */
+
 .quiz-result {
-  background-color: #f8f9fa;
+  background-color: var(--color-surface-alt);
   border-radius: 8px;
   padding: 1rem;
   font-size: 1.15rem;
   line-height: 1.9;
 }
 
+.dark-mode .quiz-result { background-color: var(--color-bg-alt); }
+
 .quiz-word { display: inline; }
+.quiz-correct { color: var(--color-success); font-weight: 600; }
+.quiz-incorrect { color: var(--color-danger); font-weight: 600; text-decoration: underline; }
 
-.quiz-correct {
-  color: #198754;
-  font-weight: 600;
+/* ── Hint mode ──────────────────────────────────────────── */
+
+.hint-text {
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+  padding: 1.25rem;
+  border-radius: 8px;
+  line-height: 2;
+  word-break: break-word;
 }
 
-.quiz-incorrect {
-  color: #dc3545;
-  font-weight: 600;
-  text-decoration: underline;
+/* ── Empty state ────────────────────────────────────────── */
+
+.empty-state-card {
+  border: 2px dashed var(--color-border);
+  background-color: transparent;
 }
 
-/* ── Verse of the Day ───────────────────────────────────── */
-.verse-of-day-card {
-  border: 2px solid #0d6efd;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #f0f4ff 0%, #fff 100%);
-}
+.empty-state-icon { font-size: 3rem; line-height: 1; }
 
-.dark-mode .verse-of-day-card {
-  background: linear-gradient(135deg, #0f1f4a 0%, #16213e 100%);
-  border-color: #4a90d9;
-}
+.onboarding-steps li { line-height: 1.6; }
 
-.letter-spacing { letter-spacing: 0.08em; }
+/* ═══════════════════════════════════════════════════════════════
+   Review chart
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ── Review chart ───────────────────────────────────────── */
 .review-chart {
   display: flex;
   align-items: flex-end;
@@ -260,7 +388,7 @@ body {
 
 .chart-count {
   font-size: 0.72rem;
-  color: #6c757d;
+  color: var(--color-muted);
   height: 18px;
   line-height: 18px;
 }
@@ -275,23 +403,18 @@ body {
 
 .chart-bar {
   width: 100%;
-  background-color: #0d6efd;
+  background-color: var(--color-primary);
   border-radius: 4px 4px 0 0;
   transition: height 0.4s ease;
   min-height: 4px;
 }
 
-.chart-bar-today { background-color: #198754; }
-.chart-bar-empty { background-color: #dee2e6; opacity: 0.5; }
-
-.dark-mode .chart-bar-empty { background-color: #2a2a4e; }
-.dark-mode .chart-count { color: #8888aa; }
+.chart-bar-today { background-color: var(--color-accent); }
+.chart-bar-empty { background-color: var(--color-border); opacity: 0.6; }
 
 .chart-label {
   font-size: 0.7rem;
-  color: #6c757d;
+  color: var(--color-muted);
   margin-top: 4px;
   white-space: nowrap;
 }
-
-.dark-mode .chart-label { color: #8888aa; }
