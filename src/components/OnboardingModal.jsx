@@ -4,7 +4,7 @@ function OnboardingModal({ show, onClose }) {
   return (
     <Modal show={show} onHide={onClose} centered size="lg" aria-labelledby="onboarding-title">
       <Modal.Header closeButton closeLabel="Close welcome dialog">
-        <Modal.Title id="onboarding-title">Welcome to Scripture Memory</Modal.Title>
+        <Modal.Title as="h2" id="onboarding-title">Welcome to Scripture Memory</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p className="lead">

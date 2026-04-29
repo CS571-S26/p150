@@ -70,7 +70,7 @@ function AddVerseForm({ onAdd }) {
         <Form onSubmit={handleSubmit}>
           <Row className="mb-2">
             <Col md={5}>
-              <Form.Group>
+              <Form.Group controlId="add-verse-reference">
                 <Form.Label>Reference</Form.Label>
                 <Form.Control
                   type="text"
@@ -83,7 +83,7 @@ function AddVerseForm({ onAdd }) {
               </Form.Group>
             </Col>
             <Col md={4}>
-              <Form.Group>
+              <Form.Group controlId="add-verse-translation">
                 <Form.Label>Translation</Form.Label>
                 <Form.Select value={translation} onChange={(e) => setTranslation(e.target.value)}>
                   {TRANSLATIONS.map(t => (
@@ -108,7 +108,7 @@ function AddVerseForm({ onAdd }) {
 
           {lookupError && <Alert variant="danger" className="py-2 mb-2">{lookupError}</Alert>}
 
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3" controlId="add-verse-text">
             <Form.Label>
               Verse Text
               {lookedUpTranslation && (
@@ -125,7 +125,7 @@ function AddVerseForm({ onAdd }) {
             />
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3" controlId="add-verse-tags">
             <Form.Label>Tags <span className="text-muted fw-normal">(comma-separated)</span></Form.Label>
             <Form.Control
               type="text"
