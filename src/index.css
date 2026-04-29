@@ -254,6 +254,123 @@ h1, h2, h3, h4, h5, h6 {
 .tag-badge.clickable:hover { opacity: 0.8; }
 
 /* ═══════════════════════════════════════════════════════════════
+   Verse views — Card / Grid / List
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Compact card for grid view */
+.verse-card-compact .verse-text-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.verse-grid {
+  --bs-gutter-y: 1rem;
+}
+
+/* ── List view ──────────────────────────────────────────── */
+
+.verse-list {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--color-surface);
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+.verse-list-item + .verse-list-item {
+  border-top: 1px solid var(--color-border);
+}
+
+.verse-list-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.verse-list-header:hover,
+.verse-list-header:focus-visible {
+  background-color: var(--color-primary-soft);
+  outline: none;
+}
+
+.verse-list-chevron {
+  color: var(--color-primary);
+  font-weight: bold;
+  font-size: 1.1rem;
+  line-height: 1;
+  width: 0.9rem;
+  text-align: center;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.verse-list-item.expanded .verse-list-chevron {
+  transform: rotate(90deg);
+}
+
+.verse-list-reference {
+  color: var(--color-primary);
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 7.5rem;
+}
+
+.verse-list-badge {
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.verse-list-preview {
+  font-style: italic;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Smooth expand using grid-template-rows trick */
+.verse-list-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.verse-list-collapse > .verse-list-body {
+  overflow: hidden;
+}
+
+.verse-list-item.expanded .verse-list-collapse {
+  grid-template-rows: 1fr;
+}
+
+.verse-list-body {
+  padding: 0 1rem;
+}
+
+.verse-list-item.expanded .verse-list-body {
+  padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Reduce hover effect on list items (we have one on the header already) */
+.verse-list .verse-card { box-shadow: none; transform: none; border-left: none; }
+
+/* ═══════════════════════════════════════════════════════════════
    Stat cards & streak
    ═══════════════════════════════════════════════════════════════ */
 

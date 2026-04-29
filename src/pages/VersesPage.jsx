@@ -1,11 +1,13 @@
-import { useState, useMemo } from 'react'
-import { Container, Badge, ButtonGroup, Button } from 'react-bootstrap'
+import { useState, useEffect, useMemo } from 'react'
+import { Container, Badge, ButtonGroup, Button, Row, Col } from 'react-bootstrap'
 import VerseCard from '../components/VerseCard'
+import VerseListItem from '../components/VerseListItem'
 import AddVerseForm from '../components/AddVerseForm'
 import SearchFilter from '../components/SearchFilter'
 import BulkImport from '../components/BulkImport'
 import EmptyState from '../components/EmptyState'
 import TranslationCompare from '../components/TranslationCompare'
+import ViewToggle from '../components/ViewToggle'
 
 const MEMORIZED_FILTERS = [
   { value: 'all',         label: 'All' },
@@ -13,11 +15,25 @@ const MEMORIZED_FILTERS = [
   { value: 'memorized',   label: 'Memorized' },
 ]
 
+function loadStoredView() {
+  try {
+    const stored = localStorage.getItem('verseViewMode')
+    return stored ? JSON.parse(stored) : 'card'
+  } catch {
+    return 'card'
+  }
+}
+
 function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTag, setSelectedTag] = useState('')
   const [memorizedFilter, setMemorizedFilter] = useState('all')
   const [compareVerse, setCompareVerse] = useState(null)
+  const [viewMode, setViewMode] = useState(loadStoredView)
+
+  useEffect(() => {
+    localStorage.setItem('verseViewMode', JSON.stringify(viewMode))
+  }, [viewMode])
 
   const allTags = useMemo(() => {
     const tagSet = new Set()
@@ -46,8 +62,54 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
     setMemorizedFilter('all')
   }
 
+  const containerWidth = viewMode === 'grid' ? 1100 : 800
+
+  const renderVerses = () => {
+    if (viewMode === 'list') {
+      return (
+        <div className="verse-list">
+          {filtered.map(verse => (
+            <VerseListItem
+              key={verse.id}
+              verse={verse}
+              onDelete={deleteVerse}
+              onToggleMemorized={toggleMemorized}
+              onCompare={setCompareVerse}
+            />
+          ))}
+        </div>
+      )
+    }
+    if (viewMode === 'grid') {
+      return (
+        <Row xs={1} md={2} className="g-3 verse-grid">
+          {filtered.map(verse => (
+            <Col key={verse.id}>
+              <VerseCard
+                verse={verse}
+                onDelete={deleteVerse}
+                onToggleMemorized={toggleMemorized}
+                onCompare={setCompareVerse}
+                compact
+              />
+            </Col>
+          ))}
+        </Row>
+      )
+    }
+    return filtered.map(verse => (
+      <VerseCard
+        key={verse.id}
+        verse={verse}
+        onDelete={deleteVerse}
+        onToggleMemorized={toggleMemorized}
+        onCompare={setCompareVerse}
+      />
+    ))
+  }
+
   return (
-    <Container className="py-4" style={{ maxWidth: 800 }}>
+    <Container className="py-4" style={{ maxWidth: containerWidth, transition: 'max-width 0.3s ease' }}>
       <header className="d-flex justify-content-between align-items-center mb-3">
         <h1 className="h2 mb-0">
           My Verses <Badge bg="secondary">{verses.length}</Badge>
@@ -62,24 +124,27 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
 
       <section aria-labelledby="filter-heading" className="mb-3">
         <h2 id="filter-heading" className="visually-hidden">Filter verses</h2>
-        <ButtonGroup size="sm" aria-label="Filter by memorization status">
-          {MEMORIZED_FILTERS.map(f => (
-            <Button
-              key={f.value}
-              variant={memorizedFilter === f.value ? 'primary' : 'outline-primary'}
-              onClick={() => setMemorizedFilter(f.value)}
-              aria-pressed={memorizedFilter === f.value}
-            >
-              {f.label}
-              {f.value === 'memorized' && (
-                <Badge bg="light" text="dark" className="ms-1">{memorizedCount}</Badge>
-              )}
-              {f.value === 'unmemorized' && (
-                <Badge bg="light" text="dark" className="ms-1">{verses.length - memorizedCount}</Badge>
-              )}
-            </Button>
-          ))}
-        </ButtonGroup>
+        <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+          <ButtonGroup size="sm" aria-label="Filter by memorization status">
+            {MEMORIZED_FILTERS.map(f => (
+              <Button
+                key={f.value}
+                variant={memorizedFilter === f.value ? 'primary' : 'outline-primary'}
+                onClick={() => setMemorizedFilter(f.value)}
+                aria-pressed={memorizedFilter === f.value}
+              >
+                {f.label}
+                {f.value === 'memorized' && (
+                  <Badge bg="light" text="dark" className="ms-1">{memorizedCount}</Badge>
+                )}
+                {f.value === 'unmemorized' && (
+                  <Badge bg="light" text="dark" className="ms-1">{verses.length - memorizedCount}</Badge>
+                )}
+              </Button>
+            ))}
+          </ButtonGroup>
+          <ViewToggle value={viewMode} onChange={setViewMode} />
+        </div>
       </section>
 
       <SearchFilter
@@ -109,16 +174,8 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
           />
         ) : (
           <>
-            {filtered.map(verse => (
-              <VerseCard
-                key={verse.id}
-                verse={verse}
-                onDelete={deleteVerse}
-                onToggleMemorized={toggleMemorized}
-                onCompare={setCompareVerse}
-              />
-            ))}
-            <p className="text-muted text-center small mt-2">
+            {renderVerses()}
+            <p className="text-muted text-center small mt-3">
               Showing {filtered.length} of {verses.length} verses
             </p>
           </>
