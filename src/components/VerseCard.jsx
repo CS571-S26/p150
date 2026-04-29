@@ -1,7 +1,7 @@
 import { Card, Button, Form } from 'react-bootstrap'
 import TagBadge from './TagBadge'
 
-function VerseCard({ verse, onDelete, onToggleMemorized, showActions = true }) {
+function VerseCard({ verse, onDelete, onToggleMemorized, onCompare, showActions = true }) {
   return (
     <Card className="verse-card mb-3">
       <Card.Body>
@@ -26,6 +26,16 @@ function VerseCard({ verse, onDelete, onToggleMemorized, showActions = true }) {
                 className="text-nowrap"
                 aria-label={`Mark ${verse.reference} as memorized`}
               />
+              {onCompare && (
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => onCompare(verse)}
+                  aria-label={`Compare ${verse.reference} across translations`}
+                >
+                  Compare
+                </Button>
+              )}
               <Button
                 variant="outline-danger"
                 size="sm"

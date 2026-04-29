@@ -355,6 +355,23 @@ h1, h2, h3, h4, h5, h6 {
   word-break: break-word;
 }
 
+/* ── Translation comparison ─────────────────────────────── */
+
+.translation-card {
+  border-left: 3px solid var(--color-primary);
+  background-color: var(--color-surface-alt);
+}
+
+.dark-mode .translation-card {
+  background-color: var(--color-bg-alt);
+}
+
+.translation-badge {
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
 /* ── Empty state ────────────────────────────────────────── */
 
 .empty-state-card {

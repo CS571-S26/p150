@@ -5,6 +5,7 @@ import AddVerseForm from '../components/AddVerseForm'
 import SearchFilter from '../components/SearchFilter'
 import BulkImport from '../components/BulkImport'
 import EmptyState from '../components/EmptyState'
+import TranslationCompare from '../components/TranslationCompare'
 
 const MEMORIZED_FILTERS = [
   { value: 'all',         label: 'All' },
@@ -16,6 +17,7 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTag, setSelectedTag] = useState('')
   const [memorizedFilter, setMemorizedFilter] = useState('all')
+  const [compareVerse, setCompareVerse] = useState(null)
 
   const allTags = useMemo(() => {
     const tagSet = new Set()
@@ -113,6 +115,7 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
                 verse={verse}
                 onDelete={deleteVerse}
                 onToggleMemorized={toggleMemorized}
+                onCompare={setCompareVerse}
               />
             ))}
             <p className="text-muted text-center small mt-2">
@@ -121,6 +124,12 @@ function VersesPage({ verses, addVerse, deleteVerse, toggleMemorized }) {
           </>
         )}
       </section>
+
+      <TranslationCompare
+        verse={compareVerse}
+        show={compareVerse !== null}
+        onClose={() => setCompareVerse(null)}
+      />
     </Container>
   )
 }
