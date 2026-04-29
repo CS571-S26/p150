@@ -1,57 +1,68 @@
 import { useState } from 'react'
-import { Card, Form, Button, Alert } from 'react-bootstrap'
+import { Card, Form, Button, Alert, ProgressBar, Row, Col, Spinner } from 'react-bootstrap'
+import { TRANSLATIONS, fetchVerse } from '../utils/bibleApi'
 
-const PLACEHOLDER = `John 3:16 | For God so loved the world that he gave his only begotten Son...
-Psalm 23:1 | The Lord is my shepherd, I shall not want.
-Philippians 4:13 | I can do all things through Christ which strengtheneth me.`
+const PLACEHOLDER = `John 3:16
+Psalm 23:1
+Philippians 4:13
+Romans 8:28`
 
-function parseBulkInput(raw) {
-  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0)
-  const verses = []
-  const errors = []
-
-  lines.forEach((line, i) => {
-    const sepIndex = line.indexOf('|')
-    if (sepIndex === -1) {
-      errors.push(`Line ${i + 1}: missing "|" separator`)
-      return
-    }
-    const reference = line.slice(0, sepIndex).trim()
-    const text = line.slice(sepIndex + 1).trim()
-    if (!reference || !text) {
-      errors.push(`Line ${i + 1}: empty reference or text`)
-      return
-    }
-    verses.push({ reference, text, tags: [] })
-  })
-
-  return { verses, errors }
+function parseReferences(raw) {
+  return raw
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
 }
 
 function BulkImport({ onImport }) {
   const [open, setOpen] = useState(false)
   const [raw, setRaw] = useState('')
+  const [translation, setTranslation] = useState('kjv')
+  const [importing, setImporting] = useState(false)
+  const [progress, setProgress] = useState({ current: 0, total: 0 })
   const [feedback, setFeedback] = useState(null)
 
-  const handleImport = () => {
-    const { verses, errors } = parseBulkInput(raw)
-    if (verses.length === 0) {
-      setFeedback({ type: 'danger', message: 'No valid verses found. Use format: Reference | Verse text' })
+  const handleImport = async () => {
+    const references = parseReferences(raw)
+    if (references.length === 0) {
+      setFeedback({ type: 'danger', message: 'Add at least one reference (one per line).' })
       return
     }
-    verses.forEach(v => onImport(v))
+
+    setImporting(true)
+    setFeedback(null)
+    setProgress({ current: 0, total: references.length })
+
+    const successes = []
+    const failures = []
+
+    for (let i = 0; i < references.length; i++) {
+      const ref = references[i]
+      try {
+        const result = await fetchVerse(ref, translation)
+        onImport({ reference: result.reference, text: result.text, tags: [] })
+        successes.push(result.reference)
+      } catch {
+        failures.push(ref)
+      }
+      setProgress({ current: i + 1, total: references.length })
+    }
+
+    setImporting(false)
     setFeedback({
-      type: errors.length > 0 ? 'warning' : 'success',
-      message: `Imported ${verses.length} verse${verses.length === 1 ? '' : 's'}.${errors.length > 0 ? ` ${errors.length} line${errors.length === 1 ? '' : 's'} skipped.` : ''}`,
-      errors,
+      type: failures.length === 0 ? 'success' : successes.length === 0 ? 'danger' : 'warning',
+      message: `Imported ${successes.length} of ${references.length} verses.`,
+      failures,
     })
-    setRaw('')
+    if (failures.length === 0) setRaw('')
   }
 
   const handleClose = () => {
+    if (importing) return
     setOpen(false)
     setRaw('')
     setFeedback(null)
+    setProgress({ current: 0, total: 0 })
   }
 
   if (!open) {
@@ -67,47 +78,91 @@ function BulkImport({ onImport }) {
     )
   }
 
+  const progressPct = progress.total > 0 ? Math.round((progress.current / progress.total) * 100) : 0
+
   return (
     <Card className="mb-3 bulk-import-card">
       <Card.Body>
         <h3 className="h5 mb-2">Bulk Import Verses</h3>
         <p className="text-muted small mb-3">
-          One verse per line. Format: <code>Reference | Verse text</code>
+          One reference per line (e.g. <code>John 3:16</code>). Each verse text will be looked up
+          automatically from the selected translation.
         </p>
 
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="bulk-import-textarea">Verses (one per line)</Form.Label>
-          <Form.Control
-            id="bulk-import-textarea"
-            as="textarea"
-            rows={5}
-            placeholder={PLACEHOLDER}
-            value={raw}
-            onChange={(e) => setRaw(e.target.value)}
-            aria-describedby="bulk-import-help"
-          />
-          <Form.Text id="bulk-import-help" className="text-muted">
-            Tags can be added individually after import.
-          </Form.Text>
-        </Form.Group>
+        <Row className="mb-3 align-items-end">
+          <Col md={8}>
+            <Form.Group>
+              <Form.Label htmlFor="bulk-import-textarea">References (one per line)</Form.Label>
+              <Form.Control
+                id="bulk-import-textarea"
+                as="textarea"
+                rows={6}
+                placeholder={PLACEHOLDER}
+                value={raw}
+                onChange={(e) => setRaw(e.target.value)}
+                disabled={importing}
+                aria-describedby="bulk-import-help"
+              />
+              <Form.Text id="bulk-import-help" className="text-muted">
+                Tags can be added per-verse after import.
+              </Form.Text>
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label htmlFor="bulk-import-translation">Translation</Form.Label>
+              <Form.Select
+                id="bulk-import-translation"
+                value={translation}
+                onChange={(e) => setTranslation(e.target.value)}
+                disabled={importing}
+              >
+                {TRANSLATIONS.map(t => (
+                  <option key={t.id} value={t.id}>{t.label}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+
+        {importing && (
+          <div className="mb-3" aria-live="polite">
+            <div className="d-flex justify-content-between mb-1">
+              <small className="text-muted">Looking up verses...</small>
+              <small className="text-muted">{progress.current} / {progress.total}</small>
+            </div>
+            <ProgressBar now={progressPct} animated striped />
+          </div>
+        )}
 
         {feedback && (
-          <Alert variant={feedback.type} className="py-2">
+          <Alert variant={feedback.type} className="py-2" aria-live="polite">
             {feedback.message}
-            {feedback.errors && feedback.errors.length > 0 && (
-              <ul className="mb-0 mt-1 small">
-                {feedback.errors.slice(0, 3).map((err, i) => <li key={i}>{err}</li>)}
-                {feedback.errors.length > 3 && <li>...and {feedback.errors.length - 3} more</li>}
-              </ul>
+            {feedback.failures && feedback.failures.length > 0 && (
+              <>
+                <div className="small mt-1 fw-semibold">Could not find:</div>
+                <ul className="mb-0 mt-1 small">
+                  {feedback.failures.slice(0, 5).map((ref, i) => <li key={i}>{ref}</li>)}
+                  {feedback.failures.length > 5 && <li>...and {feedback.failures.length - 5} more</li>}
+                </ul>
+              </>
             )}
           </Alert>
         )}
 
         <div className="d-flex gap-2">
-          <Button variant="success" onClick={handleImport} disabled={!raw.trim()}>
-            Import Verses
+          <Button
+            variant="success"
+            onClick={handleImport}
+            disabled={importing || !raw.trim()}
+          >
+            {importing
+              ? <><Spinner size="sm" className="me-1" />Importing...</>
+              : 'Import Verses'}
           </Button>
-          <Button variant="outline-secondary" onClick={handleClose}>Close</Button>
+          <Button variant="outline-secondary" onClick={handleClose} disabled={importing}>
+            Close
+          </Button>
         </div>
       </Card.Body>
     </Card>

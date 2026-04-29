@@ -1,22 +1,6 @@
 import { useState } from 'react'
 import { Form, Button, Card, Row, Col, Spinner, Alert } from 'react-bootstrap'
-
-const TRANSLATIONS = [
-  { id: 'kjv',   label: 'KJV — King James Version' },
-  { id: 'web',   label: 'WEB — World English Bible' },
-  { id: 'asv',   label: 'ASV — American Standard (1901)' },
-  { id: 'bbe',   label: 'BBE — Bible in Basic English' },
-  { id: 'oeb-us',label: 'OEB — Open English Bible' },
-]
-
-async function fetchVerse(reference, translation) {
-  const encoded = encodeURIComponent(reference)
-  const res = await fetch(`https://bible-api.com/${encoded}?translation=${translation}`)
-  if (!res.ok) throw new Error('Verse not found')
-  const data = await res.json()
-  if (data.error) throw new Error(data.error)
-  return { reference: data.reference, text: data.text.trim() }
-}
+import { TRANSLATIONS, fetchVerse } from '../utils/bibleApi'
 
 function AddVerseForm({ onAdd }) {
   const [reference, setReference] = useState('')
