@@ -118,9 +118,9 @@ function App() {
   useEffect(() => { localStorage.setItem('reviewHistory', JSON.stringify(reviewHistory)) }, [reviewHistory])
 
   const addVerse = (verse) => {
-    setVerses([...verses, {
+    setVerses(prev => [...prev, {
       ...verse,
-      id: Date.now(),
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       dateAdded: TODAY,
       lastReviewed: null,
       timesReviewed: 0,
@@ -130,10 +130,10 @@ function App() {
     }])
   }
 
-  const deleteVerse = (id) => setVerses(verses.filter(v => v.id !== id))
+  const deleteVerse = (id) => setVerses(prev => prev.filter(v => v.id !== id))
 
   const toggleMemorized = (id) => {
-    setVerses(verses.map(v => v.id === id ? { ...v, memorized: !v.memorized } : v))
+    setVerses(prev => prev.map(v => v.id === id ? { ...v, memorized: !v.memorized } : v))
   }
 
   const markReviewed = (id, rating = 'good') => {
@@ -141,7 +141,7 @@ function App() {
     const days = INTERVALS[rating]
     const nextReviewDate = addDays(today, days)
 
-    setVerses(verses.map(v => v.id === id ? {
+    setVerses(prev => prev.map(v => v.id === id ? {
       ...v,
       lastReviewed: today,
       timesReviewed: v.timesReviewed + 1,
